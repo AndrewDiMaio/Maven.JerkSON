@@ -9,27 +9,11 @@ import java.util.regex.Pattern;
 
 public class ItemParser {
 
-    public List<Item> parseItemList(String valueToParse){ //throws ItemParseException {
+    public List<Item> parseItemList(String valueToParse) {
         Matcher matcher = regMethod("##", valueToParse);
         List<String> groceryListIn = Arrays.asList(matcher.replaceAll("\n").split("\n"));
-        Item[] parsedList = new Item[groceryListIn.size()];
-        int bound = groceryListIn.size();
-        for (int i = 0; i < bound; i++) {
-            try {
-                if (parseSingleItem(groceryListIn.get(i)) != null) {
-                    parsedList[i] = parseSingleItem(groceryListIn.get(i));
-                }
-            } catch (ItemParseException e) {
-                e.printStackTrace();
-            }
-        }
-        ArrayList<Item> list = new ArrayList<>();
-        for (Item item : parsedList) {
-            if (item != null) {
-                list.add(item);
-            }
-        }
-        return list;
+        Item[] parsedList = nullCheck(groceryListIn);
+        return arrayListMethod(parsedList);
     }
 
     public Item parseSingleItem(String singleItem) throws ItemParseException {
@@ -52,8 +36,31 @@ public class ItemParser {
         return new Item(name, price, type, expiration);
     }
 
-    public Matcher regMethod(String regex, String string){
+    private Matcher regMethod(String regex, String string){
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         return pattern.matcher(string);
+    }
+
+    private Item[] nullCheck(List<String> groceryListIn) {
+        Item[] parsedList = new Item[groceryListIn.size()];
+        int bound = groceryListIn.size();
+        for (int i = 0; i < bound; i++) {
+            try {
+                if (parseSingleItem(groceryListIn.get(i)) != null) {
+                    parsedList[i] = parseSingleItem(groceryListIn.get(i));
+                }
+            } catch (ItemParseException e) {
+                e.printStackTrace();
+            }
+        }return parsedList;
+    }
+
+    private ArrayList<Item> arrayListMethod(Item[] parsedList){
+        ArrayList<Item> list = new ArrayList<>();
+        for (Item item : parsedList) {
+            if (item != null) {
+                list.add(item);
+            }
+        }return list;
     }
 }
